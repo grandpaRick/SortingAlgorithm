@@ -1,19 +1,19 @@
 import java.util.Arrays;
 
-class Main {
+class Test {
     public static void main(String[] args) {
-        Heap mySort = new Heap(new int[] {0,-3,0});
-        System.out.println("sorted: " + Arrays.toString(mySort.heapSort()));
+        HeapSort hs = new HeapSort(new int[] {22,17,19,12,15,11,7,6,9,10,5});
+        System.out.println(Arrays.toString(hs.heapSort()));
     }
-
 }
 
-class Heap {
+
+class HeapSort {
     private int lastPosition = -1;
     private int size;
     private int[] arr;
 
-    public Heap(int[] arr){
+    public HeapSort(int[] arr){
         this. size = arr.length;
         this.arr = arr;
     }
@@ -62,7 +62,7 @@ class Heap {
 
     private void trickleDown(int parentIndex){
 
-        if((leftChild(parentIndex) <lastPosition) && (rightChild(parentIndex) <lastPosition)){
+        if((leftChild(parentIndex) <lastPosition) && (rightChild(parentIndex) <= lastPosition)){
             if(this.arr[leftChild(parentIndex)] >= this.arr[rightChild(parentIndex)]){ // allow swaps between parent and the higher ..
                 swap(leftChild(parentIndex),parentIndex); //swap between larger element and root element
                 trickleDown(leftChild(parentIndex));
