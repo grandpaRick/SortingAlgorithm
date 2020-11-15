@@ -1,78 +1,101 @@
-
+import java.util.Arrays;
 
 class Main {
     public static void main(String[] args) {
-
+        Heap mySort = new Heap(new int[] {0,-3,0});
+        System.out.println("sorted: " + Arrays.toString(mySort.heapSort()));
     }
 
 }
 
 class Heap {
-    private int lastPosition = 0;
-    private int size = 10;
-    private int[] arr = new int[size];
+    private int lastPosition = -1;
+    private int size;
+    private int[] arr;
 
+    public Heap(int[] arr){
+        this. size = arr.length;
+        this.arr = arr;
+    }
 
-    public void add(int value){
-        arr[lastPosition++] = value;
+    public int[] heapSort(){
+        System.out.println("default: " + Arrays.toString(this.arr));
+        for (int i =0; i< this.size; ++i){
+            add(this.arr[i]);
+        }
+        System.out.println("postAdd: " + Arrays.toString(this.arr));
+        for (int i = 0; i < this.size; ++i){
+            remove();
+        }
+
+        return this.arr;
+    }
+    private void add(int value){
+        this.arr[++lastPosition] = value;
         trickleUp(lastPosition);
 
     }
 
-    public boolean isParentViolation(int parentIndex) throws ArrayIndexOutOfBoundsException {
-        if (arr[getLeftChildIndex(parentIndex)] > arr[parentIndex] ||
-                arr[getRightChildIndex(parentIndex)] > arr[parentIndex]){
+    private boolean parentViolation(int index) {
+        if ( this.arr[index] > arr[parent(index)]){ //confirms if child node is larger than parent node.
             return true;
         }
         return false;
     }
 
-    public void remove(){
-        swap(0,lastPosition--);
-        trickleDown(0);
+    private void remove(){
+        swap(0,lastPosition--); //place root node(highest integer) to last unsorted array position.
+        trickleDown(0); //trickle down to return heap to a stable state.
 
     }
 
-    public void trickleUp(int index){
+    private void trickleUp(int index){
         if(index == 0){ //if at the root position, return.
             return;
         }
-        if(isParentViolation(getParentIndex(index))){ //Check if child node violates max heap rule.
-            swap(getParentIndex(index), index); //swap child node with parent node.
-            trickleUp(getParentIndex(index));
+        if(parentViolation(index)){ //Check if child node violates max heap rule.
+            swap(parent(index), index); //swap child node with parent node.
+            trickleUp(parent(index)); //recursively check child/parent node, ensure max heap rule.
         }
         return;
     }
 
-    public void trickleDown(int parentIndex){
-        int largerChildIndex;
-        if(arr[getLeftChildIndex(parentIndex)] >= arr[getRightChildIndex(parentIndex)]){
-            largerChildIndex = getLeftChildIndex(parentIndex);
-        } else {
-            largerChildIndex = getRightChildIndex(parentIndex);
+    private void trickleDown(int parentIndex){
+
+        if((leftChild(parentIndex) <lastPosition) && (rightChild(parentIndex) <lastPosition)){
+            if(this.arr[leftChild(parentIndex)] >= this.arr[rightChild(parentIndex)]){ // allow swaps between parent and the higher ..
+                swap(leftChild(parentIndex),parentIndex); //swap between larger element and root element
+                trickleDown(leftChild(parentIndex));
+            } else {
+                swap(rightChild(parentIndex),parentIndex); //swap between larger element and root element
+                trickleDown(rightChild(parentIndex));
+            }
         }
 
-        swap(largerChildIndex,parentIndex);
-        if()
-        trickleDown(largerChildIndex);
+        if((leftChild(parentIndex) <= lastPosition) && //takes care of the edge case when the left child
+                (this.arr[parentIndex] < this.arr[leftChild(parentIndex)])){ //is the last position
+            swap(leftChild(parentIndex),parentIndex);
+            trickleDown(leftChild(parentIndex));
+        }
+
         return;
     }
 
-    public void swap(int pos1, int pos2){
-        int temp = arr[pos1];
-        arr[pos1] = arr[pos2];
-        arr[pos2] = temp;
+    private void swap(int pos1, int pos2){ //perform swap operation on passed index.
+        int temp = this.arr[pos1];
+        this.arr[pos1] = this.arr[pos2];
+        this.arr[pos2] = temp;
     }
 
-    public int getLeftChildIndex(int parentIndex){
+    private int leftChild(int parentIndex){ //return the left child index to the index argument
         return (2*parentIndex)+1;
     }
 
-    public int getRightChildIndex(int parentIndex){
+    private int rightChild(int parentIndex){ //return the right child index to the index argument
         return (2*parentIndex)+2;
     }
 
-    public  int getParentIndex(int childIndex){
+    private  int parent(int childIndex){ //return the parent index to the index argument
         return (childIndex-1)/2;
     }
 }
